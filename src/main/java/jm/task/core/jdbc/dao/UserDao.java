@@ -5,6 +5,7 @@ import jm.task.core.jdbc.model.User;
 import java.util.List;
 
 public interface UserDao {
+    final static String TABLE_NAME = "Users";
 
 
     void createUsersTable();
