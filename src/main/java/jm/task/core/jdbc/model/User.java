@@ -1,13 +1,15 @@
 package jm.task.core.jdbc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jm.task.core.jdbc.dao.UserDao;
 
-@Table
+import javax.persistence.*;
+
+@Entity
+@Table(name = UserDao.TABLE_NAME)
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column
