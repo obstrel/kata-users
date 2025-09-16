@@ -1,6 +1,7 @@
 package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -23,7 +24,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users " +
+        String sql = "CREATE TABLE IF NOT EXISTS Users " +
                 "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, " +
                 "age TINYINT NOT NULL)";
@@ -43,21 +44,23 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void dropUsersTable() {
-        final String sql =
-                "DROP TABLE `" + TABLE_NAME + "`";
+        if (Util.isTableExists(TABLE_NAME)) {
 
-        try {
-            EntityTransaction transaction = entityManager.getTransaction();
+            final String sql =
+                    "DROP TABLE `" + TABLE_NAME + "`";
 
-            transaction.begin();
-        Query q = entityManager.createNativeQuery(sql);
+            try {
+                EntityTransaction transaction = entityManager.getTransaction();
 
-        int i = q.executeUpdate();
-            transaction.commit();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                transaction.begin();
+                Query q = entityManager.createNativeQuery(sql);
+
+                int i = q.executeUpdate();
+                transaction.commit();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
-
     }
 
     @Override
@@ -83,7 +86,27 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void removeUserById(long id) {
+        EntityTransaction transaction = null;
 
+        try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+
+            User user = entityManager.find(User.class, id);
+
+            if (user != null) {
+                entityManager.remove(user);
+
+                transaction.commit();
+            }
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            System.err.println("Error deleting record: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -103,7 +126,26 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
     @Override
     public void cleanUsersTable() {
+        EntityTransaction transaction = null;
 
+        try {
+            transaction = entityManager.getTransaction();
+            transaction.begin();
+
+            String hql = "DELETE FROM User"; // Удаляем все объекты User из таблицы
+            Query query = entityManager.createQuery(hql);
+
+            int rowsDeleted = query.executeUpdate();
+
+            transaction.commit();
+
+        } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            System.err.println("Error deleting records: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
