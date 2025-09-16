@@ -104,7 +104,6 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
-            System.err.println("Error deleting record: " + e.getMessage());
             e.printStackTrace();
         }
     }
