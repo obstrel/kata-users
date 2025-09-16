@@ -24,6 +24,7 @@ public class Main {
         Arrays.stream(testUsers).forEach(user -> {addUser(us, user);});
 
         printAllUsers(us);
+        us.removeUserById(1);
         clearUsers(us);
         us.dropUsersTable();
 

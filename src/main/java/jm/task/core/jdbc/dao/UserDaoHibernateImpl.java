@@ -27,34 +27,36 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
                 "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "name VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, " +
                 "age TINYINT NOT NULL)";
-        Query q = entityManager.createNativeQuery(sql);
 
-        int i = q.executeUpdate();
+        try {
+            EntityTransaction transaction = entityManager.getTransaction();
 
-//        HibernateUtil
-//        try (Session session = getSessionFactory().openSession()) {
-//            Transaction transaction = session.beginTransaction();
-//
-//            sql = "CREATE TABLE IF NOT EXISTS users " +
-//                    "(id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-//                    "name VARCHAR(50) NOT NULL, lastName VARCHAR(50) NOT NULL, " +
-//                    "age TINYINT NOT NULL)";
-//
-//            Query query = session.createSQLQuery(sql).addEntity(User.class);
-//
-//            transaction.commit();
+            transaction.begin();
+            Query q = entityManager.createNativeQuery(sql);
+
+            int i = q.executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-    //session.close();
-
 
     @Override
     public void dropUsersTable() {
         final String sql =
                 "DROP TABLE `" + TABLE_NAME + "`";
 
+        try {
+            EntityTransaction transaction = entityManager.getTransaction();
+
+            transaction.begin();
         Query q = entityManager.createNativeQuery(sql);
 
         int i = q.executeUpdate();
+            transaction.commit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -71,7 +73,6 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
 
             transaction.commit();
         } catch (Exception e) {
-            // 5. Откатываем транзакцию в случае ошибки
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }

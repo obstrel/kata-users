@@ -38,29 +38,5 @@ public class Util {
         return ret[0];
     }
 
-    public static void execQuery(String sql, Consumer<PreparedStatement> statementConsumer) {
-        consumeConnection(connection -> {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    if (statementConsumer != null) {
-                        statementConsumer.accept(preparedStatement);
-                    }
-                    preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-    }
-
-    public static void getData(String selectSql, Consumer<ResultSet> resultSetConsumer) {
-        consumeConnection(connection -> {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(selectSql)) {
-                final ResultSet rs = preparedStatement.executeQuery();
-                resultSetConsumer.accept(rs);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
     // реализуйте настройку соеденения с БД
 }
