@@ -33,6 +33,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
             EntityTransaction transaction = entityManager.getTransaction();
 
             transaction.begin();
+
             Query q = entityManager.createNativeQuery(sql);
 
             int i = q.executeUpdate();
@@ -148,7 +149,7 @@ public class UserDaoHibernateImpl implements UserDao, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         if (entityManager != null) {
             entityManager.close();
         }

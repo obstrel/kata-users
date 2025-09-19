@@ -16,104 +16,21 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        if (!Util.isTableExists(TABLE_NAME)) {
-            final String sql =
-                    "CREATE TABLE `"
-                            + TABLE_NAME
-                            + "` (`Id` BIGINT NOT NULL AUTO_INCREMENT , `Name` VARCHAR(100) NULL , `LastName` VARCHAR(100) NULL , `Age` INT NULL , PRIMARY KEY (`Id`)) ENGINE = InnoDB;";
-
-            Util.consumeConnection(connection -> {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-
     }
 
     public void dropUsersTable() {
-        if (Util.isTableExists(TABLE_NAME)) {
-            final String sql =
-                    "DROP TABLE `" + TABLE_NAME + "`";
-            Util.consumeConnection(connection -> {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                    preparedStatement.executeUpdate();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        final String sql =
-                "INSERT INTO " + TABLE_NAME
-                        + " (name, lastName, age) VALUES (?, ?, ?)";
-
-        Util.consumeConnection(connection -> {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setString(1, name);
-                preparedStatement.setString(2, lastName);
-                preparedStatement.setInt(3, age);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     public void removeUserById(long id) {
-        final String sql =
-                "DELETE FROM " + TABLE_NAME
-                        + " WHERE id = ?";
-
-        Util.consumeConnection(connection -> {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setLong(1, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     public List<User> getAllUsers() {
-        final String sql =
-                "SELECT * FROM " + TABLE_NAME;
-
-        List<User> users = new ArrayList<>();
-
-
-        Util.consumeConnection(connection -> {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                final ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    User user = new User(resultSet.getString("Name"), resultSet.getString("LastName"), resultSet.getByte("Age"));
-
-                    users.add(user);
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
-        return users;
+        return null;
     }
 
     public void cleanUsersTable() {
-        final String sql =
-                "DELETE FROM " + TABLE_NAME;
-
-        Util.consumeConnection(connection -> {
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-
     }
 }
